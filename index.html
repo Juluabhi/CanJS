@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Circle and Arrow</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+        button {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="gameCanvas" width="600" height="300"></canvas><br>
+<button id="hitBtn">Hit</button>
+<button id="resetBtn">Reset</button>
+
+<script>
+// Canvas Setup
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+// Initial Positions & Dimensions
+const circleRadius = 30;
+const circleX = circleRadius + 10;  // Left side of canvas
+const circleY = canvas.height / 2;
+
+const arrowWidth = 40;
+const arrowHeight = 10;
+let arrowX = canvas.width - arrowWidth - 10;  // Right side of canvas
+const arrowY = circleY - arrowHeight / 2;
+
+let circleColor = getRandomColor();
+let arrowMoving = false;
+let arrowSpeed = 2;
+
+// Functions to Draw Circle and Arrow
+function drawCircle() {
+    ctx.beginPath();
+    ctx.arc(circleX, circleY, circleRadius, 0, Math.PI * 2);
+    ctx.fillStyle = circleColor;
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawArrow() {
+    ctx.beginPath();
+    ctx.moveTo(arrowX, arrowY);
+    ctx.lineTo(arrowX + arrowWidth, arrowY + arrowHeight / 2);
+    ctx.lineTo(arrowX, arrowY + arrowHeight);
+    ctx.fillStyle = 'black';
+    ctx.fill();
+    ctx.closePath();
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Update Canvas
+function update() {
+    clearCanvas();
+    drawCircle();
+    drawArrow();
+
+    if (arrowMoving) {
+        if (arrowX > circleX + circleRadius) {
+            arrowX -= arrowSpeed;
+        } else {
+            arrowMoving = false;
+            circleColor = getRandomColor();  // Change circle color upon hit
+        }
+    }
+
+    requestAnimationFrame(update);
+}
+
+// Generate Random Color
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+
+// Start Arrow Movement
+document.getElementById('hitBtn').addEventListener('click', () => {
+    arrowMoving = true;
+});
+
+// Reset the Application
+document.getElementById('resetBtn').addEventListener('click', () => {
+    arrowX = canvas.width - arrowWidth - 10;  // Reset arrow position
+    circleColor = getRandomColor();  // Reset circle color
+    arrowMoving = false;
+});
+
+// Start the animation loop
+update();
+</script>
+
+</body>
+</html>
